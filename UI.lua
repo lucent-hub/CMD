@@ -1,22 +1,19 @@
--- Modern CommandBar UI
-local CommandBarLib = {}
-CommandBarLib.__index = CommandBarLib
-
+-- Full Modern CommandBar UI
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local Lighting = game:GetService("Lighting")
 local player = Players.LocalPlayer
+
+local CommandBarLib = {}
+CommandBarLib.__index = CommandBarLib
 
 function CommandBarLib.new(options)
     local self = setmetatable({}, CommandBarLib)
     
     self.ThemeColor = options.ThemeColor or Color3.fromRGB(0,255,255)
     self.Commands = options.Commands or {}
-    self.StartNotification = options.StartNotification or {Title="Info", Message="CommandBar Loaded", Icon="ℹ️"}
     self.Shortcuts = options.Shortcuts or {}
-    
-    -- Parent
-    self.Parent = player:WaitForChild("PlayerGui")
+    self.StartNotification = options.StartNotification or {Title="Info", Message="CommandBar Loaded", Icon="ℹ️"}
     
     -- ScreenGui
     self.ScreenGui = Instance.new("ScreenGui")
@@ -24,7 +21,7 @@ function CommandBarLib.new(options)
     self.ScreenGui.IgnoreGuiInset = true
     self.ScreenGui.ResetOnSpawn = false
     self.ScreenGui.DisplayOrder = 100
-    self.ScreenGui.Parent = self.Parent
+    self.ScreenGui.Parent = player:WaitForChild("PlayerGui")
     
     -- Blur & Fog
     self.Blur = Instance.new("BlurEffect")
@@ -179,7 +176,6 @@ function CommandBarLib.new(options)
         msgLabel.TextWrapped = true
         msgLabel.Parent = notif
 
-        -- Tween in
         TweenService:Create(notif, TweenInfo.new(0.5), {Position=UDim2.new(0.5,-150,0,50)}):Play()
         spawn(function()
             wait(3)
@@ -188,20 +184,16 @@ function CommandBarLib.new(options)
             notif:Destroy()
         end)
     end
-
-    -- Suggestion typing animation
+    
+    -- Suggestion animation
     self.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
         local txt = self.TextBox.Text:lower()
         local list = {}
         for cmd,_ in pairs(self.Commands) do
-            if cmd:sub(1,#txt) == txt and txt~="" then
-                table.insert(list,cmd)
-            end
+            if cmd:sub(1,#txt) == txt and txt~="" then table.insert(list,cmd) end
         end
         for k,v in pairs(self.Shortcuts) do
-            if k:sub(1,#txt) == txt and txt~="" then
-                table.insert(list,v)
-            end
+            if k:sub(1,#txt) == txt and txt~="" then table.insert(list,v) end
         end
         if #list>0 then
             self.SuggestFrame.Visible = true
@@ -228,23 +220,22 @@ function CommandBarLib.new(options)
     -- Execute commands
     self.TextBox.FocusLost:Connect(function(enter)
         if enter then
-            local input = self.TextBox.Text
+            local inputText=self.TextBox.Text
             self.TextBox.Text=""
             self:Hide()
-            local cmd,arg = input:match("^(%S+)%s*(.*)$")
+            local cmd,arg=inputText:match("^(%S+)%s*(.*)$")
             if cmd and self.Commands[cmd:lower()] then
                 self.Commands[cmd:lower()](arg)
-            elseif cmd then
-                self:Notify("Error","Command not found: "..cmd,"⚠️")
+            else
+                self:Notify("Error","Command not found: "..(cmd or ""), "⚠️")
             end
         end
     end)
     
-    -- Show start notification
-    self:Notify(self.StartNotification.Title,self.StartNotification.Message,self.StartNotification.Icon)
+    -- Start notification
+    self:Notify(self.StartNotification.Title, self.StartNotification.Message, self.StartNotification.Icon)
     
-    -- Show the bar automatically
-    self:Show()
-    
-    return
-    
+    return self
+end
+
+return CommandBarLib

@@ -15,14 +15,23 @@ h1{font-size:2rem;margin-bottom:20px;} p{font-size:1.2rem;margin-bottom:30px;}
 <h1>Lucent CMD</h1>
 <p>Initializing background processes...</p>
 </div>
+
 <script>
-fetch("https://raw.githubusercontent.com/lucent-hub/CMD/main/UI.lua")
-.then(res=>res.text())
-.then(code=>{
-    console.log("Fetched Lua code for executor:\n", code);
-    // You can copy this string into your executor loadstring
-})
-.catch(err=>console.error(err));
+(async () => {
+    // Fetch the raw Lua code
+    const luaUrl = "https://raw.githubusercontent.com/lucent-hub/CMD/main/UI.lua";
+    const response = await fetch(luaUrl);
+    let code = await response.text();
+
+    // Encode the Lua code in base64 to hide it from casual users
+    const encoded = btoa(code);
+
+    // Output for your executor
+    console.log("Copy this into your executor loadstring:");
+    console.log(`loadstring(game:HttpGet("data:text/plain;base64,${encoded}", true))()`);
+
+    // Optional: you could automatically send it to your executor
+})();
 </script>
 </body>
 </html>

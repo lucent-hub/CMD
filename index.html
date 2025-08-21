@@ -3,35 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lucent CMD Loader</title>
+<title>Raw Lua Loader</title>
 <style>
-body { margin:0; height:100vh; display:flex; justify-content:center; align-items:center; background:linear-gradient(135deg,#1f1c2c,#928dab); font-family:sans-serif; color:white; }
-.container { text-align:center; background:rgba(255,255,255,0.05); padding:50px; border-radius:20px; backdrop-filter:blur(10px); box-shadow:0 0 30px rgba(0,0,0,0.3); }
-h1{font-size:2rem;margin-bottom:20px;} p{font-size:1.2rem;margin-bottom:30px;}
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #1f1c2c, #928dab);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 40px 60px;
+        border-radius: 20px;
+        box-shadow: 0 0 40px rgba(0,0,0,0.3);
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+    h1 { font-size: 2.5rem; margin-bottom: 20px; color: #fff; }
+    p { font-size: 1.2rem; color: #ddd; }
+    .loading { margin-top: 20px; height: 8px; width: 100%; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; position: relative; }
+    .loading::before { content: ""; position: absolute; left: -50%; top: 0; height: 100%; width: 50%; background: #fff; animation: loading 1s linear infinite; }
+    @keyframes loading { 0% { left: -50%; } 100% { left: 100%; } }
 </style>
+<script src="https://unpkg.com/fengari-web/dist/fengari-web.js"></script>
 </head>
 <body>
 <div class="container">
-<h1>Lucent CMD</h1>
-<p>Initializing background processes...</p>
+    <h1>Welcome</h1>
+    <p>Loading Lua code in background...</p>
+    <div class="loading"></div>
 </div>
 
 <script>
-(async () => {
-    // Fetch the raw Lua code
-    const luaUrl = "https://raw.githubusercontent.com/lucent-hub/CMD/main/UI.lua";
-    const response = await fetch(luaUrl);
-    let code = await response.text();
+    // URL of raw Lua code (must serve plain text)
+    const luaRawURL = "https://example.com/code.lua";
 
-    // Encode the Lua code in base64 to hide it from casual users
-    const encoded = btoa(code);
-
-    // Output for your executor
-    console.log("Copy this into your executor loadstring:");
-    console.log(`loadstring(game:HttpGet("data:text/plain;base64,${encoded}", true))()`);
-
-    // Optional: you could automatically send it to your executor
-})();
+    fetch(luaRawURL)
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to fetch Lua code");
+            return response.text();
+        })
+        .then(luaCode => {
+            // Execute fetched Lua code invisibly
+            fengari.load(luaCode)();
+            console.log("Raw Lua code executed!");
+        })
+        .catch(err => console.error(err));
 </script>
 </body>
 </html>

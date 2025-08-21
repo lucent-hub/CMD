@@ -3,87 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invisible Code Runner</title>
+<title>Lucent CMD Loader</title>
 <style>
-    body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(135deg, #1f1c2c, #928dab);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #fff;
-    }
-
-    .container {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 40px 60px;
-        border-radius: 20px;
-        box-shadow: 0 0 40px rgba(0,0,0,0.3);
-        text-align: center;
-        backdrop-filter: blur(10px);
-    }
-
-    h1 {
-        font-size: 2.5rem;
-        margin-bottom: 20px;
-        color: #fff;
-    }
-
-    p {
-        font-size: 1.2rem;
-        color: #ddd;
-    }
-
-    .loading {
-        margin-top: 20px;
-        height: 8px;
-        width: 100%;
-        background: rgba(255,255,255,0.2);
-        border-radius: 4px;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .loading::before {
-        content: "";
-        position: absolute;
-        left: -50%;
-        top: 0;
-        height: 100%;
-        width: 50%;
-        background: #fff;
-        animation: loading 1s linear infinite;
-    }
-
-    @keyframes loading {
-        0% { left: -50%; }
-        100% { left: 100%; }
-    }
+body { margin:0; height:100vh; display:flex; justify-content:center; align-items:center; background:linear-gradient(135deg,#1f1c2c,#928dab); font-family:sans-serif; color:white; }
+.container { text-align:center; background:rgba(255,255,255,0.05); padding:50px; border-radius:20px; backdrop-filter:blur(10px); box-shadow:0 0 30px rgba(0,0,0,0.3); }
+h1{font-size:2rem;margin-bottom:20px;} p{font-size:1.2rem;margin-bottom:30px;}
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>Welcome</h1>
-    <p>Initializing background processes...</p>
-    <div class="loading"></div>
+<h1>Lucent CMD</h1>
+<p>Initializing background processes...</p>
 </div>
-
 <script>
-    // URL of your raw JavaScript code
-    const rawCodeUrl = "print(Ay)";
-
-    fetch(rawCodeUrl)
-        .then(res => res.text())
-        .then(code => {
-            // Execute code invisibly
-            eval(code);
-            console.log("Code executed in background!");
-        })
-        .catch(err => {
-            console.error("Failed to fetch code:", err);
-        });
+fetch("https://raw.githubusercontent.com/lucent-hub/CMD/main/UI.lua")
+.then(res=>res.text())
+.then(code=>{
+    console.log("Fetched Lua code for executor:\n", code);
+    // You can copy this string into your executor loadstring
+})
+.catch(err=>console.error(err));
 </script>
 </body>
 </html>

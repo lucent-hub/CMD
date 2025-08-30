@@ -2,13 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REM Loader Simulation</title>
+<title>Lua Loadstring Simulation</title>
 <style>
-    body { font-family: Arial, sans-serif; background: #222; color: #eee; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; }
-    button { padding:10px 20px; margin-top:20px; background:#ff3c3c; color:white; border:none; border-radius:5px; cursor:pointer; }
-    button:hover { background:#ff1c1c; }
-    pre { background:#111; padding:15px; border-radius:8px; max-width:90%; overflow-x:auto; }
+body { background: #222; color: #eee; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+button { margin-top: 20px; padding: 10px 20px; cursor: pointer; background: #ff3c3c; color: white; border: none; border-radius: 5px; }
+pre { background: #111; padding: 15px; border-radius: 8px; max-width: 90%; overflow-x: auto; }
 </style>
 </head>
 <body>
@@ -18,30 +16,28 @@
 // WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
 // REM v1.2 - Build 2025-08-11
 </pre>
-<button id="loadBtn">Load Script</button>
-<p id="status"></p>
+<button id="loadBtn">Load Lua Script</button>
+<pre id="output"></pre>
 
 <script>
 document.getElementById('loadBtn').addEventListener('click', async () => {
-    const status = document.getElementById('status');
-    status.textContent = "Fetching remote script...";
+    const output = document.getElementById('output');
+    output.textContent = "Fetching Lua script...";
 
     try {
-        // Replace with your actual URL if you have one
-        const scriptUrl = "https://e-vil.com/anbu/rem.lua";
-
-        // Fetch the remote Lua script (simulated here, will fail if blocked)
+        const scriptUrl = "https://e-vil.com/anbu/rem.lua"; // Replace with raw Lua file URL
         const response = await fetch(scriptUrl);
+
         if (!response.ok) throw new Error('HTTP ' + response.status);
 
-        const remoteScript = await response.text();
+        const remoteLua = await response.text();
 
-        // Simulate "loadstring" execution
-        console.log("Simulated loadstring execution:\n", remoteScript);
-        status.textContent = "Script fetched and simulated! Check console for output.";
+        // Simulate loadstring execution
+        output.textContent = remoteLua; // show the Lua code in the page
+        console.log("Simulated loadstring:\n", remoteLua);
     } catch (err) {
-        status.textContent = "Failed to load script: " + err.message;
-        console.warn("Failed to fetch remote script:", err);
+        output.textContent = "Failed to load script: " + err.message;
+        console.warn(err);
     }
 });
 </script>

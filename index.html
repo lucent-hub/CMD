@@ -1,47 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Lua Loadstring Simulation</title>
-<style>
-body { background: #222; color: #eee; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-button { margin-top: 20px; padding: 10px 20px; cursor: pointer; background: #ff3c3c; color: white; border: none; border-radius: 5px; }
-pre { background: #111; padding: 15px; border-radius: 8px; max-width: 90%; overflow-x: auto; }
-</style>
-</head>
-<body>
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+--- Anti-Tamper v1.0
 
-<h2>REM Loader Simulation</h2>
-<pre>
-// WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-// REM v1.2 - Build 2025-08-11
-</pre>
-<button id="loadBtn">Load Lua Script</button>
-<pre id="output"></pre>
+local HttpService = game:GetService("HttpService")
+local executor = (identifyexecutor and identifyexecutor()) or "Unknown"
 
-<script>
-document.getElementById('loadBtn').addEventListener('click', async () => {
-    const output = document.getElementById('output');
-    output.textContent = "Fetching Lua script...";
+local function fetchKey()
+    -- This URL should point to your server that validates and returns keys
+    local keyUrl = "https://yourserver.com/getkey"
+    local ok, response = pcall(function()
+        return game:HttpGet(keyUrl)
+    end)
+    if ok and response then
+        return response
+    else
+        error("Failed to fetch key or unauthorized executor")
+    end
+end
 
-    try {
-        const scriptUrl = "https://e-vil.com/anbu/rem.lua"; // Replace with raw Lua file URL
-        const response = await fetch(scriptUrl);
+local function validateKey(key)
+    -- You can do server-side validation here
+    if key ~= "YOUR_VALID_KEY" then
+        error("Invalid or leaked key detected! Execution halted.")
+    end
+end
 
-        if (!response.ok) throw new Error('HTTP ' + response.status);
+-- Main execution
+local key = fetchKey()
+validateKey(key)
 
-        const remoteLua = await response.text();
+print("Key valid! Running script on executor: " .. executor)
 
-        // Simulate loadstring execution
-        output.textContent = remoteLua; // show the Lua code in the page
-        console.log("Simulated loadstring:\n", remoteLua);
-    } catch (err) {
-        output.textContent = "Failed to load script: " + err.message;
-        console.warn(err);
-    }
-});
-</script>
-
-</body>
-</html>
-
+-- Your main script goes here

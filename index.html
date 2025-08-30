@@ -1,35 +1,23 @@
---[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
---- Anti-Tamper v1.0
+<button id="runBtn">Run Script</button>
+<pre id="output"></pre>
 
-local HttpService = game:GetService("HttpService")
-local executor = (identifyexecutor and identifyexecutor()) or "Unknown"
+<script>
+document.getElementById('runBtn').addEventListener('click', async () => {
+    const output = document.getElementById('output');
+    
+    try {
+        // Simulate fetching a key from your server
+        const response = await fetch("https://yourserver.com/getkey");
+        if (!response.ok) throw new Error("Unauthorized");
 
-local function fetchKey()
-    -- This URL should point to your server that validates and returns keys
-    local keyUrl = "https://yourserver.com/getkey"
-    local ok, response = pcall(function()
-        return game:HttpGet(keyUrl)
-    end)
-    if ok and response then
-        return response
-    else
-        error("Failed to fetch key or unauthorized executor")
-    end
-end
+        const key = await response.text();
 
-local function validateKey(key)
-    -- You can do server-side validation here
-    if key ~= "YOUR_VALID_KEY" then
-        error("Invalid or leaked key detected! Execution halted.")
-    end
-end
+        // Anti-tamper check
+        if (key !== "YOUR_VALID_KEY") throw new Error("Invalid or leaked key");
 
--- Main execution
-local key = fetchKey()
-validateKey(key)
-
-print("Key valid! Running script on executor: " .. executor)
-
--- Your main script goes here
+        output.textContent = "Key valid! Running script...\nKey: " + key;
+    } catch(err) {
+        output.textContent = "Execution blocked! " + err.message;
+    }
+});
+</script>

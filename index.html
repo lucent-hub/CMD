@@ -2,59 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raw Lua Loader</title>
-<style>
-    body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(135deg, #1f1c2c, #928dab);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #fff;
-    }
-
-    .container {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 40px 60px;
-        border-radius: 20px;
-        box-shadow: 0 0 40px rgba(0,0,0,0.3);
-        text-align: center;
-        backdrop-filter: blur(10px);
-    }
-
-    h1 { font-size: 2.5rem; margin-bottom: 20px; color: #fff; }
-    p { font-size: 1.2rem; color: #ddd; }
-    .loading { margin-top: 20px; height: 8px; width: 100%; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; position: relative; }
-    .loading::before { content: ""; position: absolute; left: -50%; top: 0; height: 100%; width: 50%; background: #fff; animation: loading 1s linear infinite; }
-    @keyframes loading { 0% { left: -50%; } 100% { left: 100%; } }
-</style>
-<script src="https://unpkg.com/fengari-web/dist/fengari-web.js"></script>
+<title>Lua Key Generator</title>
 </head>
 <body>
-<div class="container">
-    <h1>Welcome</h1>
-    <p>Loading Lua code in background...</p>
-    <div class="loading"></div>
-</div>
+<h2>Lua Key Generator</h2>
+<button id="loadBtn">Get Lua Key</button>
+<p id="status"></p>
 
 <script>
-    // URL of raw Lua code (must serve plain text)
-    const luaRawURL = "https://example.com/code.lua";
+// Simulate fetching a key from a "server" without hardcoding URL
+document.getElementById('loadBtn').addEventListener('click', async () => {
+    const status = document.getElementById('status');
+    status.textContent = "Fetching key...";
 
-    fetch(luaRawURL)
-        .then(response => {
-            if (!response.ok) throw new Error("Failed to fetch Lua code");
-            return response.text();
-        })
-        .then(luaCode => {
-            // Execute fetched Lua code invisibly
-            fengari.load(luaCode)();
-            console.log("Raw Lua code executed!");
-        })
-        .catch(err => console.error(err));
+    try {
+        // Simulate fetch (the URL is hidden / dynamic)
+        function getKeyFromServer() {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const key = "idk lol"; // fetched secret, never in HTML source
+                    resolve(key);
+                }, 500);
+            });
+        }
+
+        const key = await getKeyFromServer();
+
+        // Generate Lua code dynamically
+        const luaCode = `
+-- Auto-generated Lua key
+local key = "${key}"
+print("key is " .. key)
+`;
+
+        console.log("Generated Lua code:\n" + luaCode);
+        status.textContent = "Lua code generated! Check console.";
+    } catch(err) {
+        status.textContent = "Failed: " + err.message;
+    }
+});
 </script>
 </body>
 </html>

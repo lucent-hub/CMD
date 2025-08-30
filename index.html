@@ -1,23 +1,26 @@
-<button id="runBtn">Run Script</button>
-<pre id="output"></pre>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>REM Loader</title>
+</head>
+<body>
+<pre>
+--[[
+    WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+--- REM v1.2 - Build 2025-08-11
 
-<script>
-document.getElementById('runBtn').addEventListener('click', async () => {
-    const output = document.getElementById('output');
-    
-    try {
-        // Simulate fetching a key from your server
-        const response = await fetch("https://yourserver.com/getkey");
-        if (!response.ok) throw new Error("Unauthorized");
+print("Hello! This Lua script was loaded remotely.")
 
-        const key = await response.text();
+-- Example anti-tamper logic
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
-        // Anti-tamper check
-        if (key !== "YOUR_VALID_KEY") throw new Error("Invalid or leaked key");
+print("Player Name:", player.Name)
 
-        output.textContent = "Key valid! Running script...\nKey: " + key;
-    } catch(err) {
-        output.textContent = "Execution blocked! " + err.message;
-    }
-});
-</script>
+-- Add your main script logic here
+print("Script running safely!")
+</pre>
+</body>
+</html>

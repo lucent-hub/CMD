@@ -1,26 +1,65 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>REM Loader</title>
-</head>
-<body>
-<pre>
 --[[
-    WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+    Anti-Tampering Protection System
+    Prevents direct browser execution
 ]]
---- REM v1.2 - Build 2025-08-11
 
-print("Hello! This Lua script was loaded remotely.")
+local function isLoadstringEnvironment()
+    -- Check if we're in a loadstring environment
+    local env = getfenv and getfenv(1) or _G
+    local is_roblox = pcall(function() return game ~= nil end)
+    local is_http = type(http) == "table" and type(http.request) == "function"
+    
+    -- Check for common loadstring indicators
+    local has_roblox_api = pcall(function() return game:GetService("HttpService") end)
+    local has_synapse = type(syn) == "table"
+    local has_sentinel = type(sentinel) == "table"
+    
+    return is_roblox or is_http or has_roblox_api or has_synapse or has_sentinel
+end
 
--- Example anti-tamper logic
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local function isBrowserEnvironment()
+    -- Check for browser-specific objects
+    if type(window) == "table" or type(document) == "table" then
+        return true
+    end
+    
+    -- Check for navigator object
+    if type(navigator) == "table" then
+        return true
+    end
+    
+    -- Check for browser-specific functions
+    if type(alert) == "function" or type(prompt) == "function" then
+        return true
+    end
+    
+    return false
+end
 
-print("Player Name:", player.Name)
+-- Main protection check
+if isBrowserEnvironment() and not isLoadstringEnvironment() then
+    -- This is a browser direct access - block it
+    if type(http) == "table" and type(http.write) == "function" then
+        http.write("HTTP/1.1 403 Forbidden\r\n")
+        http.write("Content-Type: text/html\r\n\r\n")
+        http.write([[
+            <html><body>
+            <h1>E-vil Logo</h1>
+            <h2>Access Forbidden</h2>
+            <p>Direct script access is not permitted. Scripts are designed for loadstring execution only.</p>
+            <p>Browser access is blocked for security reasons.</p>
+            <p><strong>Error Code: 403 - Forbidden Access</strong></p>
+            </body></html>
+        ]])
+    else
+        print("Access Forbidden - Direct browser access not allowed")
+    end
+    return nil
+end
 
--- Add your main script logic here
-print("Script running safely!")
-</pre>
-</body>
-</html>
+-- If we reach here, it's a valid loadstring environment
+print("Loading REM v1.2 - Build 2025-08-11")
+
+-- Your original script content continues here...
+-- loadstring(game:HttpGet("https://e-vil.com/anbu/rem.lua"))()
+-- [[ YOUR ACTUAL SCRIPT CODE GOES HERE ]]

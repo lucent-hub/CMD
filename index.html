@@ -43,13 +43,34 @@ if isBrowserEnvironment() and not isLoadstringEnvironment() then
         http.write("HTTP/1.1 403 Forbidden\r\n")
         http.write("Content-Type: text/html\r\n\r\n")
         http.write([[
-            <html><body>
-            <h1>E-vil Logo</h1>
-            <h2>Access Forbidden</h2>
-            <p>Direct script access is not permitted. Scripts are designed for loadstring execution only.</p>
-            <p>Browser access is blocked for security reasons.</p>
-            <p><strong>Error Code: 403 - Forbidden Access</strong></p>
-            </body></html>
+            <title>Access Forbidden</title>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 100px;
+        }
+        h2 {
+            color: #ff4c4c;
+            font-size: 36px;
+        }
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        strong {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <h2>No Ppl Allowed</h2>
+    <p>Direct script access is not permitted. Scripts are designed for loadstring execution only.</p>
+    <p>Browser access is blocked for security reasons.</p>
+    <p><strong>Error Code: 403 - Forbidden Access</strong></p>
+</body>
         ]])
     else
         print("Access Forbidden - Direct browser access not allowed")

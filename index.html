@@ -1,45 +1,228 @@
---[[
-    REM v1.2 Anti-Tampering Protection System
-    Prevents direct browser execution
-]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti-Tampering Protection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(15, 25, 35, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        
+        header {
+            background: rgba(15, 25, 35, 0.95);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #4ecdc4;
+        }
+        
+        .subtitle {
+            color: #c5cae9;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            background: #d32f2f;
+        }
+        
+        .content {
+            padding: 25px;
+        }
+        
+        .message {
+            background: rgba(20, 30, 48, 0.6);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #ff4444;
+        }
+        
+        p {
+            line-height: 1.5;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+        
+        .error-code {
+            font-weight: bold;
+            color: #ff4444;
+            margin-top: 15px;
+        }
+        
+        .code-block {
+            background: rgba(15, 25, 35, 0.9);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            border-left: 4px solid #4ecdc4;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+        
+        .lua-block {
+            background: rgba(40, 30, 30, 0.9);
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .option {
+            background: rgba(30, 40, 58, 0.7);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid #4ecdc4;
+        }
+        
+        .option-title {
+            font-weight: bold;
+            color: #4ecdc4;
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #c5cae9;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Anti-Tampering Protection System</h1>
+            <div class="subtitle">Prevents direct browser execution</div>
+            <div class="status">Browser Environment Detected</div>
+        </header>
+        
+        <div class="content">
+            <div class="message">
+                <h2>No People Allowed</h2>
+                <p>Direct script access is not permitted. Scripts are designed for loadstring execution only.</p>
+                <p>Browser access is blocked for security reasons.</p>
+                <p class="error-code">Error Code: 403 - Forbidden Access</p>
+            </div>
+            
+            <div class="option">
+                <div class="option-title">For Lua Environment Execution:</div>
+                <p>Use this in your Lua executor:</p>
+                <div class="code-block lua-block">
+-- Load the protected script<br>
+loadstring(game:HttpGet("https://e-vil.com/anbu/rem.lua"))()<br><br>
+-- Output will be: "Loading REM v1.2 - Build 2025-08-11"
+                </div>
+            </div>
+            
+            <div class="option">
+                <div class="option-title">Server-Side Protection (Recommended)</div>
+                <p>Add to your .htaccess file:</p>
+                <div class="code-block">
+# Block direct browser access to .lua files<br>
+&lt;FilesMatch "\.lua$"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;SetEnvIf Referer "^$" direct_access<br>
+&nbsp;&nbsp;&nbsp;&nbsp;SetEnvIf Referer ".*roblox.*" allowed_referrer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Deny from env=direct_access<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Allow from env=allowed_referrer<br>
+&lt;/FilesMatch&gt;
+                </div>
+            </div>
+            
+            <div class="option">
+                <div class="option-title">Lua Script Protection</div>
+                <p>Add to the beginning of your Lua script:</p>
+                <div class="code-block lua-block">
+local function isLoadstringEnvironment()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-- Environment detection logic<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return is_roblox or is_http or has_roblox_api<br>
+end<br><br>
+if isBrowserEnvironment() and not isLoadstringEnvironment() then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-- Block unauthorized access<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return nil<br>
+end<br><br>
+print("Loading REM v1.2 - Build 2025-08-11")<br>
+-- Your script continues here...
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>REM v1.2 - Build 2025-08-11 | Security Framework</p>
+        </footer>
+    </div>
 
-local function isLoadstringEnvironment()
-    local ok, _ = pcall(function() return game:GetService("HttpService") end)
-    local synEnv = type(syn) == "table"
-    local sentinelEnv = type(sentinel) == "table"
-    local secureLoad = type(secure_load) == "function"
+    <script>
+        // Anti-tampering logic
+        function isLoadstringEnvironment() {
+            try {
+                // Check for execution environment indicators
+                const hasRoblox = typeof game !== 'undefined' && game !== null;
+                const hasHttp = typeof http === 'object' && typeof http.request === 'function';
+                const hasSynapse = typeof syn === 'object';
+                const hasSentinel = typeof sentinel === 'object';
+                
+                return hasRoblox || hasHttp || hasSynapse || hasSentinel;
+            } catch (e) {
+                return false;
+            }
+        }
 
-    return ok or synEnv or sentinelEnv or secureLoad
-end
+        function isBrowserEnvironment() {
+            // Check for browser-specific objects
+            return typeof window === 'object' || 
+                   typeof document === 'object' ||
+                   typeof navigator === 'object' ||
+                   typeof alert === 'function' ||
+                   typeof prompt === 'function';
+        }
 
-local function isBrowserEnvironment()
-    return not pcall(function() return game end)
-end
-
-if isBrowserEnvironment() and not isLoadstringEnvironment() then
-    local forbiddenMessage = [[
-        <html>
-        <head><title>Access Forbidden</title></head>
-        <body>
-            <h2>AY GANG you trnna skid crazyy</h2>
-            <p>yo shit got leaked everything</p>
-            <p>ip leaked gang this is why u shouldint skid also in the script it doesnt leak gng</p>
-            <p><strong>Error Code: 403 - Forbidden Access</strong></p>
-            <script>
-                console.log("fevber");
-            </script>
-        </body>
-        </html>
-    ]]
-
-    if type(http) == "table" and type(http.write) == "function" then
-        http.write("HTTP/1.1 403 Forbidden\r\nContent-Type: text/html\r\n\r\n")
-        http.write(forbiddenMessage)
-    else
-        print("Access Forbidden - Direct browser access not allowed")
-    end
-
-    return nil
-end
-
-print("Loading REM v1.2 - Build 2025-08-11")
+        // Run the protection check
+        if (isBrowserEnvironment() && !isLoadstringEnvironment()) {
+            console.log("Access Forbidden - Direct browser access not allowed");
+        }
+    </script>
+</body>
+</html>

@@ -1,58 +1,46 @@
---[[
-    Anti-Tampering Protection System
-    Prevents direct browser execution
-]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>403 Forbidden</title>
+  <style>
+    body {
+      background: #0d0d0d;
+      color: #ff3333;
+      font-family: monospace, monospace;
+      text-align: center;
+      padding-top: 10%;
+    }
+    h1 { font-size: 3em; }
+    h2 { color: #ff5555; }
+    p { color: #bbbbbb; }
+  </style>
+</head>
+<body>
+  <h1>yo shit got exposed vro</h1>
+  <h2>ip leaked bitch stop skiding</h2>
+  <p>even w vpn we got yo device info</p>
+  <p><strong>Error Code: 403 - Forbidden Access</strong></p>
 
+  <!-- Roblox Lua hidden in <script type="text/plain"> so browsers ignore it -->
+  <script type="text/plain">
+--[[ Anti-Tampering Lua ]]
 local function isLoadstringEnvironment()
-    -- Check if we're in a loadstring environment
-    local env = getfenv and getfenv(1) or _G
-    local is_roblox = pcall(function() return game ~= nil end)
-    local is_http = type(http) == "table" and type(http.request) == "function"
-    
-    -- Check for common loadstring indicators
-    local has_roblox_api = pcall(function() return game:GetService("HttpService") end)
-    local has_synapse = type(syn) == "table"
-    local has_sentinel = type(sentinel) == "table"
-    
-    return is_roblox or is_http or has_roblox_api or has_synapse or has_sentinel
+    local okRoblox = pcall(function() return game:GetService("HttpService") end)
+    local hasSyn = type(syn) == "table"
+    local hasSentinel = type(sentinel) == "table"
+    local hasSecureLoad = type(secure_load) == "function"
+    return okRoblox or hasSyn or hasSentinel or hasSecureLoad
 end
 
-local function isBrowserEnvironment()
-    -- Check for browser-specific objects
-    if type(window) == "table" or type(document) == "table" then
-        return true
-    end
-    
-    -- Check for navigator object
-    if type(navigator) == "table" then
-        return true
-    end
-    
-    -- Check for browser-specific functions
-    if type(alert) == "function" or type(prompt) == "function" then
-        return true
-    end
-    
-    return false
+if not isLoadstringEnvironment() then
+    return nil -- blocks browser / non-Roblox env
 end
 
--- Main protection check
-if isBrowserEnvironment() and not isLoadstringEnvironment() then
-    -- This is a browser direct access - block it
-    if type(http) == "table" and type(http.write) == "function" then
-        http.write("HTTP/1.1 403 Forbidden\r\n")
-        http.write("Content-Type: text/html\r\n\r\n")
-        http.write([[
-            <html><body>
-            <h1>yo shit got exposed vro</h1>
-            <h2>ip leaked bitch stop skiding</h2>
-            <p>even w vpn we got yo device info</p>
-            <p>in the script it doesn't have loggers to.</p>
-            <p><strong>Error Code: 403 - Forbidden Access</strong></p>
-            </body></html>
-        ]])
-    else
-        print("Access Forbidden - Direct browser access not allowed")
-    end
-    return nil
-end
+-- ✅ Roblox code runs below
+print("✅ Script passed anti-tamper check and is running...")
+  </script>
+</body>
+</html>
+
+

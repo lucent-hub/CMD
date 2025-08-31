@@ -22,7 +22,7 @@
   <p>even w vpn we got yo device info</p>
   <p><strong>Error Code: 403 - Forbidden Access</strong></p>
 
-  <!-- Roblox Lua hidden in <script type="text/plain"> so browsers ignore it -->
+  <!-- Roblox Lua hidden here: browsers ignore, Roblox sees raw text -->
   <script type="text/plain">
 --[[ Anti-Tampering Lua ]]
 local function isLoadstringEnvironment()
@@ -33,14 +33,23 @@ local function isLoadstringEnvironment()
     return okRoblox or hasSyn or hasSentinel or hasSecureLoad
 end
 
-if not isLoadstringEnvironment() then
-    return nil -- blocks browser / non-Roblox env
+local function isBrowserEnvironment()
+    -- These globals only appear in browser Lua runners
+    if rawget(_G, "window") ~= nil then return true end
+    if rawget(_G, "document") ~= nil then return true end
+    if rawget(_G, "navigator") ~= nil then return true end
+    return false
 end
 
--- ✅ Roblox code runs below
+if isBrowserEnvironment() and not isLoadstringEnvironment() then
+    return nil -- Block execution for browser
+end
+
+-- Put your real Roblox script below
 print("✅ Script passed anti-tamper check and is running...")
+
+-- Add your full script logic below this line
+-- ... your code here ...
   </script>
 </body>
 </html>
-
-

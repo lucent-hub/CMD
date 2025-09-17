@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure Ad Unlock</title>
+<title>Secure 3-Ad Unlock</title>
 <style>
   body {
     margin:0;
@@ -25,7 +25,7 @@
   }
   button {
     padding:10px 20px;
-    margin-top:15px;
+    margin:10px 5px;
     border:none;
     border-radius:8px;
     cursor:pointer;
@@ -41,48 +41,56 @@
 <body>
 <div class="container">
 <h1>Unlock Your Key</h1>
-<p>Press the button below to open an ad. Keep it open for at least 3 seconds.</p>
-<button id="adBtn">Open Ad</button>
+<p>Press each ad button below and keep the ad open for at least 3 seconds.</p>
+
+<button onclick="openAd(0)">Ad 1</button>
+<button onclick="openAd(1)">Ad 2</button>
+<button onclick="openAd(2)">Ad 3</button>
+
+<div id="status"></div>
 <div id="key">XXXX-XXXX-XXXX-XXXX</div>
 </div>
 
 <script>
-const adBtn=document.getElementById('adBtn');
-const keyEl=document.getElementById('key');
-let adWindow=null;
-let adOpenedTime=0;
+let adsDone = [false,false,false];
+let adWindows = [null,null,null];
+let adTimes = [0,0,0];
+const keyEl = document.getElementById('key');
+const statusEl = document.getElementById('status');
 
-function generateKey(){
-    const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let key="";
-    for(let i=0;i<16;i++){
-        if(i>0 && i%4===0) key+="-";
-        key+=chars.charAt(Math.floor(Math.random()*chars.length));
-    }
-    keyEl.innerText=key;
-    keyEl.style.display="block";
+function openAd(index){
+    if(adsDone[index]) return;
+    adWindows[index] = window.open('https://example.com','_blank','width=800,height=600');
+    adTimes[index] = Date.now();
+    checkAd(index);
 }
 
-// Open ad button
-adBtn.onclick=()=>{
-    adWindow=window.open('https://example.com','_blank','width=800,height=600');
-    adOpenedTime=Date.now();
-    checkAdClosed();
-}
-
-// Check if ad window is closed
-function checkAdClosed(){
-    const interval=setInterval(()=>{
-        if(adWindow==null || adWindow.closed){
-            const elapsed=(Date.now()-adOpenedTime)/1000;
+function checkAd(index){
+    const interval = setInterval(()=>{
+        if(adWindows[index]==null || adWindows[index].closed){
+            const elapsed = (Date.now() - adTimes[index])/1000;
             if(elapsed<3){
-                alert("Oops! You rushed! Please try again.");
+                alert("Oops! You rushed Ad " + (index+1) + "! Start it again.");
             } else {
-                generateKey();
+                adsDone[index] = true;
+                statusEl.innerText = `Ad progress: ${adsDone.filter(d=>d).length}/3 done.`;
+                if(adsDone.every(d=>d)) generateKey();
             }
             clearInterval(interval);
         }
     },200);
+}
+
+function generateKey(){
+    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let key = "";
+    for(let i=0;i<16;i++){
+        if(i>0 && i%4===0) key+="-";
+        key += chars.charAt(Math.floor(Math.random()*chars.length));
+    }
+    keyEl.innerText = key;
+    keyEl.style.display = "block";
+    statusEl.innerText = "All ads completed! Key unlocked.";
 }
 </script>
 </body>

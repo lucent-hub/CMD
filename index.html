@@ -32,53 +32,65 @@
     background:#ff6b6b;
     color:#fff;
     font-weight:bold;
-    transition:0.3s;
+    transition:0.2s;
   }
   button:hover { background:#ff4757; }
   #key { display:none; font-size:1.5em; color:#2ed573; margin-top:20px; word-break:break-all; }
+  #status { margin-top:15px; font-weight:bold; }
 </style>
 </head>
 <body>
 <div class="container">
 <h1>Unlock Your Key</h1>
-<p>Press each ad button below and keep the ad open for at least 3 seconds.</p>
+<p>Press each ad button and keep the ad open for at least 3 seconds.</p>
 
-<button onclick="openAd(0)">Ad 1</button>
-<button onclick="openAd(1)">Ad 2</button>
-<button onclick="openAd(2)">Ad 3</button>
+<button id="ad1">Ad 1</button>
+<button id="ad2">Ad 2</button>
+<button id="ad3">Ad 3</button>
 
-<div id="status"></div>
+<div id="status">Progress: 0/3 ads completed</div>
 <div id="key">XXXX-XXXX-XXXX-XXXX</div>
 </div>
 
 <script>
-let adsDone = [false,false,false];
-let adWindows = [null,null,null];
-let adTimes = [0,0,0];
+const ads = [
+  {btn: document.getElementById('ad1'), done:false, window:null, start:0},
+  {btn: document.getElementById('ad2'), done:false, window:null, start:0},
+  {btn: document.getElementById('ad3'), done:false, window:null, start:0}
+];
+
 const keyEl = document.getElementById('key');
 const statusEl = document.getElementById('status');
 
-function openAd(index){
-    if(adsDone[index]) return;
-    adWindows[index] = window.open('https://example.com','_blank','width=800,height=600');
-    adTimes[index] = Date.now();
-    checkAd(index);
-}
+ads.forEach((ad,index)=>{
+    ad.btn.onclick = () => {
+        if(ad.done) return;
+        ad.window = window.open('https://example.com','_blank','width=800,height=600');
+        ad.start = Date.now();
+        checkAd(index);
+    };
+});
 
 function checkAd(index){
-    const interval = setInterval(()=>{
-        if(adWindows[index]==null || adWindows[index].closed){
-            const elapsed = (Date.now() - adTimes[index])/1000;
-            if(elapsed<3){
-                alert("Oops! You rushed Ad " + (index+1) + "! Start it again.");
+    const ad = ads[index];
+    const timer = setInterval(()=>{
+        if(!ad.window || ad.window.closed){
+            const elapsed = (Date.now() - ad.start)/1000;
+            if(elapsed < 3){
+                alert(`Oops! You rushed Ad ${index+1}! Please try again.`);
             } else {
-                adsDone[index] = true;
-                statusEl.innerText = `Ad progress: ${adsDone.filter(d=>d).length}/3 done.`;
-                if(adsDone.every(d=>d)) generateKey();
+                ad.done = true;
+                updateStatus();
+                if(ads.every(a=>a.done)) generateKey();
             }
-            clearInterval(interval);
+            clearInterval(timer);
         }
-    },200);
+    },50); // faster check every 50ms
+}
+
+function updateStatus(){
+    const completed = ads.filter(a=>a.done).length;
+    statusEl.innerText = `Progress: ${completed}/3 ads completed`;
 }
 
 function generateKey(){
@@ -86,11 +98,11 @@ function generateKey(){
     let key = "";
     for(let i=0;i<16;i++){
         if(i>0 && i%4===0) key+="-";
-        key += chars.charAt(Math.floor(Math.random()*chars.length));
+        key+=chars.charAt(Math.floor(Math.random()*chars.length));
     }
     keyEl.innerText = key;
-    keyEl.style.display = "block";
-    statusEl.innerText = "All ads completed! Key unlocked.";
+    keyEl.style.display="block";
+    statusEl.innerText="All ads completed! Key unlocked.";
 }
 </script>
 </body>

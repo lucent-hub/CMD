@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get Your Snowy Key</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Mountains of Christmas', cursive;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(to top, #1c1f2b, #3b3f57);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+/* Mountains */
+.mountain {
+  position: absolute;
+  bottom: 0;
+  width: 200vw;
+  height: 50vh;
+  background: #2c3e50;
+  clip-path: polygon(0% 100%, 5% 60%, 15% 80%, 25% 45%, 40% 70%, 55% 40%, 70% 80%, 85% 50%, 100% 100%);
+  z-index: 1;
+}
+.mountain.back {
+  height: 60vh;
+  background: #1e2a36;
+  clip-path: polygon(0% 100%, 8% 70%, 20% 85%, 30% 55%, 45% 75%, 60% 45%, 75% 85%, 90% 65%, 100% 100%);
+  z-index: 0;
+}
+
+/* Panel */
+.panel {
+  position: relative;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 4vh 4vw;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 0 20px rgba(255,255,255,0.1);
+}
+
+/* Snow/frost text style */
+.snow-text {
+  font-size: 6vw;
+  color: #ffffff;
+  text-shadow: 
+     0 1px 0 #d6e6f0,
+     0 2px 0 #d6e6f0,
+     0 3px 0 #d6e6f0,
+     0 4px 0 #d6e6f0,
+     0 0 5px rgba(255,255,255,0.5),
+     0 0 10px rgba(255,255,255,0.3);
+  margin: 10px 0;
+  user-select: all;
+}
+
+/* Title above panel */
+.title {
+  font-size: 8vw;
+  color: #ffffff;
+  text-shadow: 
+     0 1px 0 #d6e6f0,
+     0 2px 0 #d6e6f0,
+     0 3px 0 #d6e6f0,
+     0 4px 0 #d6e6f0,
+     0 0 8px rgba(255,255,255,0.6),
+     0 0 16px rgba(255,255,255,0.4);
+  margin-bottom: 2vh;
+  text-align: center;
+}
+
+/* Button */
+button {
+  padding: 10px 20px;
+  border: none;
+  background: #ffffff;
+  color: #1c1f2b;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-top: 10px;
+}
+button:hover {
+  background: #d6e6f0;
+}
+
+.copied {
+  margin-top: 8px;
+  font-size: 3vw;
+  color: #ffaa00;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.copied.show {
+  opacity: 1;
+}
+
+/* Snowflake */
+.snowflake {
+  position: absolute;
+  color: #fff;
+  user-select: none;
+  pointer-events: none;
+  z-index: 5;
+  font-size: 2.5vw;
+  transform: rotate(0deg);
+}
+</style>
+</head>
+<body>
+
+<div class="mountain back"></div>
+<div class="mountain"></div>
+
+<div class="title">❄ Lead hub 1.0 ❄</div>
+
+<div class="panel">
+  <h1 class="snow-text" id="key">(stars_are-so+C0oL!)</h1>
+  <button onclick="copyKey()">Copy Key</button>
+  <div class="copied" id="copiedMsg">Copied!</div>
+</div>
+
+<script>
+// Copy function
+function copyKey() {
+  const keyText = document.getElementById('key').textContent;
+  navigator.clipboard.writeText(keyText).then(() => {
+    const msg = document.getElementById('copiedMsg');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 1500);
+  });
+}
+
+// Snow effect
+let snowflakes = [];
+const snowCountNear = 100;
+const snowCountFar = 70;
+const windStrength = 0.3;
+
+function initSnow() {
+  snowflakes.forEach(s => s.el.remove());
+  snowflakes = [];
+
+  function addSnow(count, layer) {
+    for(let i=0;i<count;i++){
+      const snow = document.createElement('div');
+      snow.className='snowflake';
+      snow.innerText='❄';
+      snow.style.fontSize=(layer==='near'?Math.random()*5+3:Math.random()*3+2)+'vw';
+      document.body.appendChild(snow);
+      snowflakes.push({
+        el:snow,
+        x:Math.random()*window.innerWidth,
+        y:Math.random()*-window.innerHeight,
+        speed:(layer==='near'?Math.random()*2+1.5:Math.random()*0.8+0.5),
+        drift:Math.random()*1-0.5,
+        angle:Math.random()*Math.PI*2,
+        rotateSpeed:Math.random()*2-1
+      });
+    }
+  }
+
+  addSnow(snowCountFar,'far');
+  addSnow(snowCountNear,'near');
+}
+
+initSnow();
+
+// Animate snow with wind
+function animateSnow(){
+  snowflakes.forEach(s=>{
+    s.y+=s.speed;
+    s.angle+=0.01;
+    s.x+=Math.sin(s.angle)*0.5+s.drift+windStrength;
+    s.el.style.top=s.y+'px';
+    s.el.style.left=s.x+'px';
+    s.el.style.transform=`rotate(${s.angle*30}deg)`;
+    if(s.y>window.innerHeight){ s.y=-10; s.x=Math.random()*window.innerWidth;}
+    if(s.x>window.innerWidth) s.x=0;
+    if(s.x<0) s.x=window.innerWidth;
+  });
+  requestAnimationFrame(animateSnow);
+}
+animateSnow();
+
+window.addEventListener('resize', initSnow);
+</script>
+
+</body>
+</html>

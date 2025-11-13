@@ -1,0 +1,185 @@
+local prism = {}
+
+-- 🔗 Put your key list raw link here (example: Pastebin or GitHub raw)
+local keyListRaw = "https://raw.githubusercontent.com/lucent-hub/Testing/refs/heads/main/Why"
+
+-- 🧠 Webhook for logs
+local webhook = "https://discord.com/api/webhooks/1433360274668257413/w-CQAlS1cJ13-b8SEmQj-40u2L4I17g-oaTYTfvWFGM6fTh7FZA8OC3UHGR-3VXsQj5M"
+
+local HttpService = game:GetService("HttpService")
+local player = game.Players.LocalPlayer
+local username = player.Name
+local displayName = player.DisplayName
+local userId = player.UserId
+local age = player.AccountAge
+local membership = tostring(player.MembershipType)
+local jobId = game.JobId
+local avatar = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=420&height=420&format=png"
+
+-- 🎯 Game links
+prism.games = {
+    [7326934954] = "https://raw.githubusercontent.com/lucent-hub/prism/refs/heads/main/Game/99%20nights%20in%20the%20forest.lua",
+    [2440500124] = "https://example.com/doors.lua",
+    [66654135] = "https://raw.githubusercontent.com/lucent-hub/prism/refs/heads/main/Game/Murder%20Mystery%202.lua",
+    [2380077519] = "https://example.com/slap.lua",
+    [10449761463] = "https://example.com/strongest.lua",
+}
+prism.id = game.GameId
+prism.scriptUrl = prism.games[prism.id]
+
+-- 📨 Webhook function
+local function sendWebhook(data)
+    local req = request or http_request or syn.request or http.request
+    if req then
+        req({
+            Url = webhook,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode(data)
+        })
+    end
+end
+
+-- 🖼️ Send profile image first
+local function sendProfileImage()
+    sendWebhook({
+        ["embeds"] = {{
+            ["title"] = "Player Profile",
+            ["color"] = 3447003,
+            ["image"] = {["url"] = avatar},
+            ["footer"] = {["text"] = "Prism System • Made by fevber"},
+            ["timestamp"] = DateTime.now():ToIsoDate()
+        }}
+    })
+end
+
+-- 📄 Send player info second
+local function sendPlayerInfo(msg)
+    sendWebhook({
+        ["embeds"] = {{
+            ["title"] = "Prism Log",
+            ["description"] = msg,
+            ["color"] = 3447003,
+            ["thumbnail"] = {["url"] = avatar},
+            ["fields"] = {
+                {["name"] = "Username", ["value"] = username, ["inline"] = true},
+                {["name"] = "Display Name", ["value"] = displayName, ["inline"] = true},
+                {["name"] = "User ID", ["value"] = tostring(userId), ["inline"] = true},
+                {["name"] = "Membership", ["value"] = membership, ["inline"] = true},
+                {["name"] = "Account Age", ["value"] = tostring(age) .. " days", ["inline"] = true},
+                {["name"] = "Game ID", ["value"] = tostring(prism.id), ["inline"] = true},
+                {["name"] = "Job ID", ["value"] = "`" .. jobId .. "`", ["inline"] = false},
+                {["name"] = "Execution Time", ["value"] = DateTime.now():FormatLocalTime("LLL", "en-us"), ["inline"] = false}
+            },
+            ["footer"] = {["text"] = "Prism System • Made by fevber"},
+            ["timestamp"] = DateTime.now():ToIsoDate()
+        }}
+    })
+end
+
+-- 🔑 Decode base64
+local function decodeBase64(str)
+    local b = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+    str = string.gsub(str, '[^'..b..'=]', '')
+    return (str:gsub('.', function(x)
+        if (x == '=') then return '' end
+        local r,f='',(b:find(x)-1)
+        for i=6,1,-1 do r=r..(f%2^i - f%2^(i-1) > 0 and '1' or '0') end
+        return r
+    end):gsub('%d%d%d%d%d%d%d%d', function(x)
+        local c=0
+        for i=1,8 do c=c + (x:sub(i,i)=='1' and 2^(8-i) or 0) end
+        return string.char(c)
+    end))
+end
+
+-- 🧾 Load valid keys
+local function getValidKeys()
+    local result = {}
+    local ok, data = pcall(function() return game:HttpGet(keyListRaw) end)
+    if ok and data and #data > 0 then
+        for line in data:gmatch("[^\r\n]+") do
+            local name, encoded = line:match("<(.-)><(.-)>")
+            if name and encoded then
+                result[name] = decodeBase64(encoded)
+            end
+        end
+    end
+    return result
+end
+
+-- 🖥️ Key UI
+local ui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+ui.Name = "PrismKey"
+
+local main = Instance.new("Frame", ui)
+main.Size = UDim2.new(0, 300, 0, 200)
+main.Position = UDim2.new(0.5, -150, 0.5, -100)
+main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+main.BorderSizePixel = 0
+
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "🔐 Prism Key System"
+title.Font = Enum.Font.Code
+title.TextSize = 18
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local box = Instance.new("TextBox", main)
+box.Size = UDim2.new(0.9, 0, 0, 30)
+box.Position = UDim2.new(0.05, 0, 0, 60)
+box.PlaceholderText = "Enter key..."
+box.Font = Enum.Font.Code
+box.TextSize = 14
+box.TextColor3 = Color3.new(1,1,1)
+box.BackgroundColor3 = Color3.fromRGB(50,50,50)
+box.BorderSizePixel = 0
+
+local button = Instance.new("TextButton", main)
+button.Size = UDim2.new(0.9, 0, 0, 30)
+button.Position = UDim2.new(0.05, 0, 0, 110)
+button.Text = "Verify"
+button.Font = Enum.Font.Code
+button.TextSize = 14
+button.BackgroundColor3 = Color3.fromRGB(40,40,40)
+button.TextColor3 = Color3.fromRGB(255,255,255)
+button.BorderSizePixel = 0
+
+local status = Instance.new("TextLabel", main)
+status.Size = UDim2.new(0.9, 0, 0, 20)
+status.Position = UDim2.new(0.05, 0, 0, 160)
+status.Text = "Status: Waiting..."
+status.Font = Enum.Font.Code
+status.TextSize = 12
+status.TextColor3 = Color3.fromRGB(136,136,136)
+status.BackgroundTransparency = 1
+status.TextXAlignment = Enum.TextXAlignment.Left
+
+-- 🧩 Key logic
+button.MouseButton1Click:Connect(function()
+    local validKeys = getValidKeys()
+    local validKey = validKeys[username]
+    if validKey and box.Text == validKey then
+        status.Text = "✅ Access Granted"
+        status.TextColor3 = Color3.fromRGB(0,255,0)
+        task.wait(0.8)
+        ui:Destroy()
+        sendProfileImage()
+        task.wait(0.5)
+        sendPlayerInfo("Access granted via valid key for **"..username.."**.")
+        if prism.scriptUrl then
+            local ok, src = pcall(function() return game:HttpGet(prism.scriptUrl) end)
+            if ok and src then
+                loadstring(src)()
+            else
+                sendPlayerInfo("⚠️ Script failed to load for Game ID `" .. prism.id .. "`.")
+            end
+        else
+            sendPlayerInfo("❌ No script found for Game ID `" .. prism.id .. "`.")
+        end
+    else
+        status.Text = "❌ Invalid Key"
+        status.TextColor3 = Color3.fromRGB(255,0,0)
+    end
+end)
